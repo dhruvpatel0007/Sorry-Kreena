@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I'm Sorry</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            overflow-x: hidden; position: relative;
+        }
+        .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
+        #backgroundVideo { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.1); z-index: -1; }
+        .container {
+            max-width: 800px; padding: 40px; background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center; position: relative; backdrop-filter: blur(5px);
+            animation: fadeInUp 1s ease-out;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px);} to { opacity: 1; transform: translateY(0);} }
+        .sorry-title { font-size: 3.5rem; color: #2c3e50; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.05);} }
+        .gif-container { margin: 30px 0; }
+        .hugging-people { font-size: 4rem; animation: hug 2s ease-in-out infinite; margin: 20px auto; }
+        @keyframes hug { 0%,100% { transform: scale(1);} 50% { transform: scale(1.3);} }
+        .crying-emoji { font-size: 4rem; animation: bounce 2s infinite; margin: 20px; }
+        @keyframes bounce { 0%,20%,50%,80%,100% { transform: translateY(0);} 40% { transform: translateY(-20px);} 60% { transform: translateY(-10px);} }
+        .apology-text { font-size: 1.3rem; line-height: 1.8; color: #34495e; margin: 30px 0; text-align: left; }
+        .highlight { color: #e74c3c; font-weight: bold; }
+        .floating-elements { position: absolute; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+        .floating-heart { position: absolute; color: #ff6b9d; font-size: 1.5rem; animation: float 6s ease-in-out infinite; opacity: 0.7; }
+        .floating-heart:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-heart:nth-child(2) { left: 80%; animation-delay: 2s; }
+        .floating-heart:nth-child(3) { left: 50%; animation-delay: 4s; }
+        @keyframes float { 0%,100% { transform: translateY(100vh) rotate(0deg); opacity: 0;} 10%,90% { opacity: 0.7;} 50% { transform: translateY(-20px) rotate(180deg);} }
+        .message-box { background: rgba(255, 154, 158, 0.3); padding: 25px; border-radius: 15px; margin: 30px 0;
+            border: 2px solid rgba(255, 107, 157, 0.5); animation: glow 3s ease-in-out infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px rgba(255, 107, 157, 0.5);} to { box-shadow: 0 0 30px rgba(255, 107, 157, 0.8);} }
+        .buttons { margin-top: 30px; }
+        .btn { padding: 15px 30px; margin: 10px; border: none; border-radius: 25px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .btn-forgive { background: linear-gradient(45deg, #4CAF50, #8BC34A); color: white; }
+        .btn-forgive:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3); }
+        .btn-more-time { background: linear-gradient(45deg, #FF9800, #FFC107); color: white; }
+        .btn-angry { background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; }
+        .btn-angry:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3); }
+        .response-display { background: rgba(221, 214, 254, 0.4); padding: 25px; border-radius: 15px; margin: 30px 0; border: 2px solid rgba(139, 92, 246, 0.6); animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+        .response-text { font-size: 1.4rem; font-weight: bold; color: #4c1d95; margin: 15px 0; padding: 15px; background: white; border-radius: 10px; border-left: 5px solid #8b5cf6; }
+        .response-timestamp { font-size: 0.9rem; color: #6b7280; font-style: italic; }
+        .celebration-text, .patience-text { font-size: 1.2rem; font-weight: bold; margin-top: 15px; padding: 10px; border-radius: 8px; animation: pulse 2s infinite; }
+        .celebration-text { background: rgba(76, 175, 80, 0.2); color: #2e7d32; }
+        .patience-text { background: rgba(255, 152, 0, 0.2); color: #e65100; }
+        .hidden { display: none; }
+        .forgiveness-message { background: rgba(195, 240, 202, 0.4); padding: 30px; border-radius: 15px; margin-top: 20px; border: 2px solid rgba(76, 175, 80, 0.6); }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .star { position: absolute; color: #ffd700; animation: twinkle 2s infinite; }
+        @keyframes twinkle { 0%,100% { opacity: 0.3; transform: scale(1);} 50% { opacity: 1; transform: scale(1.2);} }
+    </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop id="backgroundVideo">
+            <source src="fish.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-heart">💔</div>
+        <div class="floating-heart">💔</div>
+        <div class="floating-heart">💔</div>
+    </div>
+
+    <div class="container">
+        <div class="stars" id="stars"></div>
+        
+        <h1 class="sorry-title">I'm Sorry</h1>
+        
+        <div class="gif-container">
+            <div class="crying-emoji">😢</div>
+            <div class="hugging-people">🫂</div>
+            <div class="crying-emoji">😔</div>
+        </div>
+
+        <div class="message-box">
+            <div class="apology-text">
+                I know that <span class="highlight">words alone</span> cannot undo what has happened, but I want you to know that I am <span class="highlight">truly sorry</span> from the bottom of my heart.
+                <br><br>
+                I take full responsibility for my actions and the pain I have caused you. You mean so much to me, and I hate that I've hurt someone I care about so deeply.
+                <br><br>
+                I am committed to <span class="highlight">making things right</span> and earning back your trust. Please give me the chance to show you how much you mean to me.
+            </div>
+        </div>
+
+        <div class="buttons" id="buttonContainer">
+            <button class="btn btn-forgive" onclick="showForgiveness()">I Forgive You ❤️</button>
+            <button class="btn btn-more-time" onclick="showMoreTime()">I Need More Time 💭</button>
+        </div>
+
+        <!-- Response Display Section -->
+        <div id="responseDisplay" class="response-display hidden">
+            <h3>Their Response:</h3>
+            <div id="responseText" class="response-text"></div>
+            <div class="response-timestamp" id="responseTime"></div>
+            <button class="btn" onclick="resetResponse()" style="background: #95a5a6; color: white; margin-top: 15px;">Reset Response</button>
+        </div>
+
+        <div id="forgivenessMessage" class="forgiveness-message hidden">
+            <h2>Thank You! 🌟</h2>
+            <p>Your forgiveness means everything to me. I promise to be better and to never take your kindness for granted again. You are amazing! ✨</p>
+            <div class="celebration-text">🎉 FORGIVEN! 🎉</div>
+        </div>
+
+        <div id="moreTimeMessage" class="forgiveness-message hidden" style="background: linear-gradient(45deg, #ffeaa7, #fab1a0);">
+            <h2>I Understand 🕐</h2>
+            <p>I respect that you need time to process this. I'll be here whenever you're ready, and I'll continue to work on becoming the person you deserve. Take all the time you need. 🌸</p>
+            <div class="patience-text">⏳ WAITING PATIENTLY ⏳</div>
+        </div>
+
+        <!-- Hidden Form (Formspree) -->
+        <form id="responseForm" action="https://formspree.io/f/xovnnzby" method="POST" class="hidden">
+            <input type="hidden" name="response" id="formResponse">
+            <input type="hidden" name="time" id="formTime">
+        </form>
+    </div>
+
+    <script>
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const emojis = ['😔', '🥺', '🫂'];
+            for (let i = 0; i < 20; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function sendResponse(responseText) {
+            document.getElementById('formResponse').value = responseText;
+            document.getElementById('formTime').value = new Date().toLocaleString();
+            document.getElementById('responseForm').submit(); // sends to Formspree
+        }
+
+        function showForgiveness() {
+            document.getElementById('responseDisplay').classList.remove('hidden');
+            document.getElementById('responseText').innerHTML = '❤️ "I Forgive You" ❤️';
+            document.getElementById('responseTime').innerHTML = 'Responded: ' + new Date().toLocaleString();
+            document.getElementById('buttonContainer').style.display = 'none';
+            document.getElementById('forgivenessMessage').classList.remove('hidden');
+            document.getElementById('moreTimeMessage').classList.add('hidden');
+            document.body.style.background = 'linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)';
+            sendResponse("I Forgive You ❤️");
+        }
+
+        function showMoreTime() {
+            document.getElementById('responseDisplay').classList.remove('hidden');
+            document.getElementById('responseText').innerHTML = '💭 "I Need More Time" 💭';
+            document.getElementById('responseTime').innerHTML = 'Responded: ' + new Date().toLocaleString();
+            document.getElementById('buttonContainer').style.display = 'none';
+            document.getElementById('moreTimeMessage').classList.remove('hidden');
+            document.getElementById('forgivenessMessage').classList.add('hidden');
+            document.body.style.background = 'linear-gradient(135deg, #FF9800 0%, #FFC107 100%)';
+            sendResponse("I Need More Time 💭");
+        }
+
+        function resetResponse() {
+            document.getElementById('responseDisplay').classList.add('hidden');
+            document.getElementById('buttonContainer').style.display = 'block';
+            document.getElementById('forgivenessMessage').classList.add('hidden');
+            document.getElementById('moreTimeMessage').classList.add('hidden');
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+
+        createStars();
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💕';
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            heart.style.fontSize = '1.5rem';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '100';
+            document.body.appendChild(heart);
+
+            heart.animate([{ transform: 'translateY(0px)', opacity: 0.8 },
+                           { transform: 'translateY(-' + (window.innerHeight + 100) + 'px)', opacity: 0 }],
+                           { duration: 4000, easing: 'ease-out' }).onfinish = () => heart.remove();
+        }, 3000);
+    </script>
+</body>
+</html>
